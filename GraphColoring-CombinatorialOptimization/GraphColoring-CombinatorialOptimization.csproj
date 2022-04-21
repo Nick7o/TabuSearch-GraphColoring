@@ -8,10 +8,18 @@
 
   <ItemGroup>
     <None Remove="myciel4.txt" />
+    <None Remove="myciel7.txt" />
+    <None Remove="queen6.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="myciel4.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="myciel7.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="queen6.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

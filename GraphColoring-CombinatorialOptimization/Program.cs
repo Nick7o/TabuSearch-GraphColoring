@@ -6,16 +6,17 @@ namespace GraphColoring
     {
         private static void Main(string[] args)
         {
-            // Generates graph of 8 vertices, up to 5 (+1 mandatory edge) random edges per vertex,
-            // and last parameter is probability of creating an additional edge
-            //var graph = new GraphGenerator().Generate(8, 5, 0.3);
-            //Console.WriteLine(graph.ToString());
+            //var graph = new GraphGenerator().Generate(10, 10, 1.0);
 
             try
             {
-                var graph = new GraphLoader().Load("myciel4.txt", GraphLoader.GraphFormat.Minimal, out var optimalColorCount);
-                Console.WriteLine($"OPTIMAL COLOR COUNT: {optimalColorCount}");
-                Console.WriteLine(graph.ToString());
+                var graph = new GraphLoader().Load("myciel4.txt", GraphLoader.GraphFormat.Minimal, out _);
+                Console.WriteLine(graph.ToString(false));
+
+                Console.WriteLine("\nPERFORMING GRAPH COLORING\n");
+
+                new GreedyColoring().Color(graph);
+                Console.WriteLine(graph.ToString(false));
             }
             catch (System.IO.FileNotFoundException exception)
             {
