@@ -19,11 +19,16 @@ namespace GraphColoring
 
         public override string ToString()
         {
+            return ToString(true);
+        }
+
+        public string ToString(bool printVertexNeighbors)
+        {
             StringBuilder builder = new StringBuilder();
             builder.AppendLine($"Graph - Vertex Count: {Vertices?.Count}");
 
             foreach (var vertex in Vertices)
-                builder.AppendLine(vertex.ToString());
+                builder.AppendLine(vertex.ToString(printVertexNeighbors));
 
             return builder.ToString();
         }

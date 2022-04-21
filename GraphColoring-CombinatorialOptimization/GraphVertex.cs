@@ -19,6 +19,11 @@ namespace GraphColoring
             Neighbors = new List<GraphVertex>();
         }
 
+        public GraphVertex(string identifier) : this()
+        {
+            Identifier = identifier;
+        }
+
         /// <summary>
         /// Connects 2 vertices.
         /// </summary>
@@ -57,23 +62,34 @@ namespace GraphColoring
 
         public override string ToString()
         {
+            return ToString(true);
+        }
+
+        public string ToString(bool printNeighbors)
+        {
             StringBuilder builder = new StringBuilder();
-            builder.Append($"{GetVertexBaseInfo(this)}, Neighbors: \n[");
+            builder.Append($"{GetVertexBaseInfo(this)}");
 
-            bool printedFirstNeighbor = false;
-            foreach (var neighbor in Neighbors)
+            if (printNeighbors)
             {
-                if (printedFirstNeighbor)
-                    builder.Append(", ");
-                else
-                    printedFirstNeighbor = true;
-                builder.Append(Environment.NewLine);
-                builder.Append("\t");
+                builder.Append($", Neighbors: \n[");
 
-                builder.Append(GetVertexBaseInfo(neighbor));
+                bool printedFirstNeighbor = false;
+                foreach (var neighbor in Neighbors)
+                {
+                    if (printedFirstNeighbor)
+                        builder.Append(", ");
+                    else
+                        printedFirstNeighbor = true;
+                    builder.Append(Environment.NewLine);
+                    builder.Append("\t");
+
+                    builder.Append(GetVertexBaseInfo(neighbor));
+                }
+
+                builder.Append("\n]");
             }
 
-            builder.Append("\n]");
             return builder.ToString();
 
             string GetVertexBaseInfo(GraphVertex vertex)

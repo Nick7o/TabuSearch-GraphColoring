@@ -6,4 +6,20 @@
     <RootNamespace>GraphColoring</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="myciel4.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="myciel4.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="myciel4.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
 </Project>
