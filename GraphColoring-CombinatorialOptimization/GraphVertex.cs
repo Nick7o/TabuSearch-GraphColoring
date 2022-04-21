@@ -8,6 +8,8 @@ namespace GraphColoring
 {
     public class GraphVertex
     {
+        public string Identifier { get; set; }
+
         public int? ColorId { get; set; }
 
         public List<GraphVertex> Neighbors { get; set; }
@@ -77,7 +79,7 @@ namespace GraphColoring
             string GetVertexBaseInfo(GraphVertex vertex)
             {
                 var colorId = vertex?.ColorId == null ? "NONE" : vertex?.ColorId.ToString();
-                return $"Vertex - Color Id: {colorId}, Neighbors Count: {vertex?.Neighbors?.Count}";
+                return $"{vertex?.Identifier} - Color Id: {colorId}, Neighbors Count: {vertex?.Neighbors?.Count}";
             }
         }
     }

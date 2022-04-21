@@ -8,32 +8,50 @@ namespace GraphColoring
 {
     public class GraphGenerator
     {
-        public Graph Generate(int vertexCount, float fillFactor)
+        private Random _random;
+
+        public GraphGenerator() => _random = new Random();
+
+        /// <summary>
+        /// Creates a instance of a connected graph.
+        /// </summary>
+        /// <param name="vertexCount">Total number of vertices of the final graph.</param>
+        /// <param name="maxAdditionalEdges">Max number of additional edges (not including ones mandatory for simple guarantee of a connected graph)</param>
+        /// <param name="additionalEdgeSpawnChance">Chance between 0.0 and 1.0 to create an additional edges.</param>
+        /// <returns></returns>
+        public Graph Generate(int vertexCount, int maxAdditionalEdges, double additionalEdgeSpawnChance)
         {
             if (vertexCount <= 0)
                 return new Graph();
 
-            fillFactor = Math.Clamp(fillFactor, 0f, 1f);
+            additionalEdgeSpawnChance = Math.Clamp(additionalEdgeSpawnChance, 0, 1);
 
             var vertices = new List<GraphVertex>(vertexCount);
 
             // Creating empty vertices
             for (int i = 0; i < vertexCount; i++)
-                vertices.Add(new GraphVertex());
+                vertices.Add(new GraphVertex()
+                {
+                    Identifier = $"V{i}"
+                });
 
+            // Simple connecting of vertices to guarantee a connected graph
             for (int i = 0; i < vertexCount; i++)
             {
-                // Simple connecting of vertices to guarantee a connected graph
-                var nextVertexIndex = i % (vertexCount - 1);
+                var nextVertexIndex = (i + 1) % vertexCount;
                 vertices[i].Connect(vertices[nextVertexIndex]);
+            }
 
-                // Filling graph with more edges
-                var randomGenerator = new Random();
-                var additionalEdges = fillFactor > 0 ? (int)(vertexCount * fillFactor) : 0;
-                for (int j = 0; j < additionalEdges; j++)
+            // Filling graph with more edges
+            for (int i = 0; i < vertexCount; i++)
+            {
+                for (int j = 0; j < maxAdditionalEdges; j++)
                 {
-                    var additionalVertexIndex = randomGenerator.Next(0, vertexCount);
-                    if (additionalVertexIndex == i)
+                    if (vertices[i].Neighbors.Count > maxAdditionalEdges || !Chance(additionalEdgeSpawnChance))
+                        continue;
+
+                    var additionalVertexIndex = _random.Next(0, vertexCount);
+                    if (additionalVertexIndex == i || vertices[additionalVertexIndex].Neighbors.Count > maxAdditionalEdges)
                         continue;
 
                     vertices[i].Connect(vertices[additionalVertexIndex]);
@@ -41,6 +59,20 @@ namespace GraphColoring
             }
 
             return new Graph(vertices);
+        }
+
+        /// <summary>
+        /// Performs a random number pick and returns if it falls in the range of probability.
+        /// </summary>
+        /// <param name="probability">A number between 0.0 and 1.0.</param>
+        private bool Chance(double probability)
+        {
+            if (probability >= 1.0)
+                return true;
+            else if (probability <= 0.0)
+                return false;
+
+            return _random.NextDouble() <= probability;
         }
     }
 }
