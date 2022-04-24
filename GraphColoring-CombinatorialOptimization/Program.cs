@@ -10,13 +10,14 @@ namespace GraphColoring
 
             try
             {
-                var graph = new GraphLoader().Load("myciel4.txt", GraphLoader.GraphFormat.Minimal, out _);
-                Console.WriteLine(graph.ToString(false));
+                var graph = new GraphLoader().Load("queen6.txt", GraphLoader.GraphFormat.Minimal, out _);
+                //Console.WriteLine(graph.ToString(false));
 
                 Console.WriteLine("\nPERFORMING GRAPH COLORING\n");
 
-                new GreedyColoring().Color(graph);
+                int maxColorId = new GreedyColoring().Color(graph);
                 Console.WriteLine(graph.ToString(false));
+                Console.WriteLine($"NUMBER OF COLORS: {maxColorId}");
             }
             catch (System.IO.FileNotFoundException exception)
             {

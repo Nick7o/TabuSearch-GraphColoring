@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="graf_test.txt" />
     <None Remove="myciel4.txt" />
     <None Remove="myciel7.txt" />
     <None Remove="queen6.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="graf_test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="myciel4.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
