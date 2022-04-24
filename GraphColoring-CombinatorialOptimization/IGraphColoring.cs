@@ -2,6 +2,6 @@
 {
     public interface IGraphColoring
     {
-        void Color(Graph graph);
+        int Color(Graph graph);
     }
 }

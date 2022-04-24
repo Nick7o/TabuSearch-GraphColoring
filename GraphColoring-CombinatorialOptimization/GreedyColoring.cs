@@ -8,14 +8,19 @@ namespace GraphColoring
 {
     public class GreedyColoring : IGraphColoring
     {
-        public void Color(Graph graph)
+        public int Color(Graph graph)
         {
+            int maxColorId = 0;
+
             foreach (var vertex in graph.Vertices)
             {
                 var neighborColors = GetNeighborColors(vertex);
                 var color = GetFirstFreeColor(neighborColors);
                 vertex.ColorId = color;
+                maxColorId = Math.Max(color, maxColorId);
             }
+
+            return maxColorId + 1;
         }
 
         private List<int> GetNeighborColors(GraphVertex vertex)

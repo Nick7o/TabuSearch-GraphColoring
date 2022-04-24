@@ -10,14 +10,14 @@ namespace GraphColoring
     {
         private Graph _graph;
 
-        public void Color(Graph graph)
+        public int Color(Graph graph)
         {
             _graph = graph;
 
             var sortedVertices = SortVerticesByDegree();
             _graph.Vertices = sortedVertices;
 
-            new GreedyColoring().Color(graph);
+            return new GreedyColoring().Color(graph);
         }
 
         private List<GraphVertex> SortVerticesByDegree()
