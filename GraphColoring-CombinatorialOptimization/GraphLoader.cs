@@ -57,8 +57,8 @@ namespace GraphColoring
                 var words = line.Split(" ");
                 if (words.Length >= 2 && int.TryParse(words[0], out var firstEndpoint) && int.TryParse(words[1], out var secondEndpoint))
                 {
-                    var firstId = $"{firstEndpoint}";
-                    var secondId = $"{secondEndpoint}";
+                    var firstId = $"{firstEndpoint:00000}";
+                    var secondId = $"{secondEndpoint:00000}";
 
                     var firstEndpointVertex = vertices.Find(v => v.Identifier == firstId);
                     var secondEndpointVertex = vertices.Find(v => v.Identifier == secondId);
@@ -77,6 +77,8 @@ namespace GraphColoring
 
                     firstEndpointVertex.Connect(secondEndpointVertex);
                 }
+
+                vertices = vertices.OrderBy(v => v.Identifier).ToList();
 
                 lineCounter++;
             }
