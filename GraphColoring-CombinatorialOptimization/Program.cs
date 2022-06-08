@@ -6,18 +6,18 @@ namespace GraphColoring
     {
         private static void Main(string[] args)
         {
-            //var graph = new GraphGenerator().Generate(10, 10, 1.0);
-
             try
             {
-                var graph = new GraphLoader().Load("queen6.txt", GraphLoader.GraphFormat.Minimal, out _);
-                //Console.WriteLine(graph.ToString(false));
-
-                Console.WriteLine("\nPERFORMING GRAPH COLORING\n");
+                var graph = new GraphLoader().Load("miles250.txt", GraphLoader.GraphFormat.Minimal, out _);
 
                 int maxColorId = new GreedyColoring().Color(graph);
-                Console.WriteLine(graph.ToString(false));
-                Console.WriteLine($"NUMBER OF COLORS: {maxColorId}");
+                var tabuGraph = graph.Clone();
+
+                var tabuSearchColoring = new TabuSearchColoring(maxColorId);
+                int maxColorTabu = tabuSearchColoring.Color(graph);
+
+                Console.WriteLine($"GREEDY NUMBER OF COLORS: {maxColorId}");
+                Console.WriteLine($"TABU NUMBER OF COLORS: {maxColorTabu}");
             }
             catch (System.IO.FileNotFoundException exception)
             {

@@ -8,15 +8,25 @@ namespace GraphColoring
 {
     public class GraphVertex
     {
+        public Graph Graph { get; set; }
         public string Identifier { get; set; }
 
         public int? ColorId { get; set; }
 
-        public List<GraphVertex> Neighbors { get; set; }
+        public IEnumerable<GraphVertex> Neighbors
+        {
+            get
+            {
+                return Graph.Vertices.Where(v => v.Identifier != Identifier && NeighborIdentifiers.Contains(v.Identifier));
+            }
+        }
+
+        public List<string> NeighborIdentifiers { get; set; }
 
         public GraphVertex()
         {
-            Neighbors = new List<GraphVertex>();
+            NeighborIdentifiers = new List<string>();
+            //Neighbors = new List<GraphVertex>();
         }
 
         public GraphVertex(string identifier) : this()
@@ -33,8 +43,8 @@ namespace GraphColoring
             if (otherVertex == null || Neighbors.Contains(otherVertex) || otherVertex.Neighbors.Contains(this))
                 return false;
 
-            Neighbors.Add(otherVertex);
-            otherVertex.Neighbors.Add(this);
+            NeighborIdentifiers.Add(otherVertex.Identifier);
+            otherVertex.NeighborIdentifiers.Add(Identifier);
             return true;
         }
 
@@ -47,8 +57,8 @@ namespace GraphColoring
             if (otherVertex == null || !Neighbors.Contains(otherVertex) || !otherVertex.Neighbors.Contains(this))
                 return false;
 
-            Neighbors.Remove(otherVertex);
-            otherVertex.Neighbors.Remove(this);
+            NeighborIdentifiers.Remove(otherVertex.Identifier);
+            otherVertex.NeighborIdentifiers.Remove(Identifier);
             return true;
         }
 
@@ -95,8 +105,15 @@ namespace GraphColoring
             string GetVertexBaseInfo(GraphVertex vertex)
             {
                 var colorId = vertex?.ColorId == null ? "NONE" : vertex?.ColorId.ToString();
-                return $"{vertex?.Identifier} - Color Id: {colorId}, Neighbors Count: {vertex?.Neighbors?.Count}";
+                return $"{vertex?.Identifier} - Color Id: {colorId}, Neighbors Count: {vertex?.Neighbors?.Count()}";
             }
+        }
+
+        public GraphVertex Clone()
+        {
+            var clone = (GraphVertex)MemberwiseClone();
+            NeighborIdentifiers = new List<string>(NeighborIdentifiers);
+            return clone;
         }
     }
 }

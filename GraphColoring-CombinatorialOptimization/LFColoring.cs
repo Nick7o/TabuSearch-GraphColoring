@@ -22,7 +22,7 @@ namespace GraphColoring
 
         private List<GraphVertex> SortVerticesByDegree()
         {
-            return _graph.Vertices.OrderByDescending(v => v.Neighbors.Count).ToList();
+            return _graph.Vertices.OrderByDescending(v => v.Neighbors.Count()).ToList();
         }
     }
 }

@@ -47,11 +47,11 @@ namespace GraphColoring
             {
                 for (int j = 0; j < maxAdditionalEdges; j++)
                 {
-                    if (vertices[i].Neighbors.Count > maxAdditionalEdges || !Chance(additionalEdgeSpawnChance))
+                    if (vertices[i].Neighbors.Count() > maxAdditionalEdges || !Chance(additionalEdgeSpawnChance))
                         continue;
 
                     var additionalVertexIndex = _random.Next(0, vertexCount);
-                    if (additionalVertexIndex == i || vertices[additionalVertexIndex].Neighbors.Count > maxAdditionalEdges)
+                    if (additionalVertexIndex == i || vertices[additionalVertexIndex].Neighbors.Count() > maxAdditionalEdges)
                         continue;
 
                     vertices[i].Connect(vertices[additionalVertexIndex]);
