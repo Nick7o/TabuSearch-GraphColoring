@@ -40,7 +40,8 @@ namespace GraphColoring
         /// <returns>True if connection was created successfully.</returns>
         public bool Connect(GraphVertex otherVertex)
         {
-            if (otherVertex == null || Neighbors.Contains(otherVertex) || otherVertex.Neighbors.Contains(this))
+            if (otherVertex == null || NeighborIdentifiers.Contains(otherVertex.Identifier)
+                || otherVertex.NeighborIdentifiers.Contains(Identifier))
                 return false;
 
             NeighborIdentifiers.Add(otherVertex.Identifier);

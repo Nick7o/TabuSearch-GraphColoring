@@ -8,7 +8,7 @@ namespace GraphColoring
 {
     class TabuSearchColoring : IGraphColoring
     {
-        public static int MaxIterations = 1000;
+        public static int MaxIterations = 100;
 
         public int StartColors { get; private set; }
 
@@ -30,20 +30,20 @@ namespace GraphColoring
 
             ClampColors(graph, numberOfColors - 1);
 
-            while (CountConflicts(graph) > 0 && iteration < MaxIterations)
+            while (iteration < MaxIterations)
             {
-                //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                //sw.Start();
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
 
-                var cn = GetConflictingVertices(graph);//.ToList();
-                var conflictsInGraph = cn.Count;
+                var conflictingVertices = GetConflictingVertices(graph);//.ToList();
+                var conflictsInGraph = conflictingVertices.Count;
 
                 GraphVertex vert = null;
                 int newColor = 0;
                 for (int r = 0; r < 200; r++)
                 {
                     //vert = cn[_random.Next(0, cn.Count)];
-                    vert = cn.ElementAt(_random.Next(0, cn.Count));
+                    vert = conflictingVertices.ElementAt(_random.Next(0, conflictingVertices.Count));
 
                     newColor = _random.Next(0, numberOfColors);
                     for (int i = 0; i < 3; i++)
@@ -102,8 +102,9 @@ namespace GraphColoring
                 else
                     iteration++;
 
-                //sw.Stop();
-                //Console.WriteLine($"ITERATION TIME: {sw.ElapsedMilliseconds}");
+
+                sw.Stop();
+                Console.WriteLine($"ITERATION TIME: {sw.ElapsedMilliseconds}");
             }
 
             return lastValidGraph.GetColorCount();
@@ -124,19 +125,24 @@ namespace GraphColoring
             return GetConflictingVertices(graph).Count / 2;
         }
 
+        private void GetConflictingNeighbors(GraphVertex vertex, HashSet<GraphVertex> collection)
+        {
+            foreach (var neighbor in vertex.Neighbors)
+            {
+                if (vertex.ColorId.Value == neighbor.ColorId.Value)
+                {
+                    collection.Add(vertex);
+                    collection.Add(neighbor);
+                }
+            }
+        }
+
         private HashSet<GraphVertex> GetConflictingVertices(Graph graph)
         {
             var result = new HashSet<GraphVertex>();
-            foreach (var vert in graph.Vertices)
+            foreach (var vertex in graph.Vertices)
             {
-                foreach (var neighbor in vert.Neighbors)
-                {
-                    if (vert.ColorId.Value == neighbor.ColorId.Value)
-                    {
-                        result.Add(vert);
-                        result.Add(neighbor);
-                    }
-                }
+                GetConflictingNeighbors(vertex, result);
             }
 
             return result;

@@ -43,6 +43,8 @@ namespace GraphColoring
             var vertices = new List<GraphVertex>();
             var graph = new Graph(vertices);
 
+            var helperDictionary = new Dictionary<string, GraphVertex>();
+
             int lineCounter = 0;
             foreach (var line in lines)
             {
@@ -57,6 +59,7 @@ namespace GraphColoring
                             var vert = new GraphVertex($"{i:00000}");
                             vert.Graph = graph;
                             graph.Vertices.Add(vert);
+                            helperDictionary[vert.Identifier] = vert;
                         }
                     }
 
@@ -70,14 +73,17 @@ namespace GraphColoring
                     var firstId = $"{firstEndpoint:00000}";
                     var secondId = $"{secondEndpoint:00000}";
 
-                    var firstEndpointVertex = graph.Vertices.Find(v => v.Identifier == firstId);
-                    var secondEndpointVertex = graph.Vertices.Find(v => v.Identifier == secondId);
+                    helperDictionary.TryGetValue(firstId, out var firstEndpointVertex);
+                    helperDictionary.TryGetValue(secondId, out var secondEndpointVertex);
+                    //var firstEndpointVertex = graph.Vertices.Find(v => v.Identifier == firstId);
+                    //var secondEndpointVertex = graph.Vertices.Find(v => v.Identifier == secondId);
 
                     if (firstEndpointVertex == null)
                     {
                         firstEndpointVertex = new GraphVertex(firstId);
                         firstEndpointVertex.Graph = graph;
                         graph.Vertices.Add(firstEndpointVertex);
+                        helperDictionary[firstId] = firstEndpointVertex;
                     }
 
                     if (secondEndpointVertex == null)
@@ -85,16 +91,16 @@ namespace GraphColoring
                         secondEndpointVertex = new GraphVertex(secondId);
                         secondEndpointVertex.Graph = graph;
                         graph.Vertices.Add(secondEndpointVertex);
+                        helperDictionary[secondId] = secondEndpointVertex;
                     }
 
                     firstEndpointVertex.Connect(secondEndpointVertex);
                 }
 
-                graph.Vertices = graph.Vertices.OrderBy(v => v.Identifier).ToList();
-
                 lineCounter++;
             }
 
+            graph.Vertices = graph.Vertices.OrderBy(v => v.Identifier).ToList();
             Console.WriteLine($" vertices: {graph.Vertices.Count} ");
 
             return graph;
