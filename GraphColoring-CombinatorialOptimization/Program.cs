@@ -8,7 +8,7 @@ namespace GraphColoring
         {
             try
             {
-                var graph = new GraphLoader().Load("miles250.txt", GraphLoader.GraphFormat.Minimal, out _);
+                var graph = new GraphLoader().Load("queen6.txt", GraphLoader.GraphFormat.Minimal, out _);
 
                 int maxColorId = new GreedyColoring().Color(graph);
                 var tabuGraph = graph.Clone();

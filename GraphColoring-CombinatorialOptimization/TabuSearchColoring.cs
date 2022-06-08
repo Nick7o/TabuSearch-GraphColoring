@@ -8,12 +8,15 @@ namespace GraphColoring
 {
     class TabuSearchColoring : IGraphColoring
     {
-        public static int MaxIterations = 10;
+        public static int MaxIterations = 1000;
 
         public int StartColors { get; private set; }
 
+        private Random _random;
+
         public TabuSearchColoring(int startColors)
         {
+            _random = new Random();
             StartColors = startColors;
         }
 
@@ -22,52 +25,85 @@ namespace GraphColoring
             int iteration = 0;
             int numberOfColors = StartColors - 1;
             var tabu = new List<(GraphVertex Vertex, int Color)>();
-
-            //Console.WriteLine(graph.ToString(false));
+            var aspiration = new Dictionary<int, int>();
             Graph lastValidGraph = graph.Clone();
 
             ClampColors(graph, numberOfColors - 1);
-            //Console.WriteLine(graph.ToString(false));
 
             while (CountConflicts(graph) > 0 && iteration < MaxIterations)
             {
-                var conflictsInGraph = CountConflicts(graph);
+                //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                //sw.Start();
 
-                foreach (var vertex in graph.Vertices)
+                var cn = GetConflictingVertices(graph);//.ToList();
+                var conflictsInGraph = cn.Count;
+
+                GraphVertex vert = null;
+                int newColor = 0;
+                for (int r = 0; r < 200; r++)
                 {
-                    var numberOfConflicts = CountConflicts(vertex);
+                    //vert = cn[_random.Next(0, cn.Count)];
+                    vert = cn.ElementAt(_random.Next(0, cn.Count));
 
-                    for (int i = 0; i < numberOfColors; i++)
+                    newColor = _random.Next(0, numberOfColors);
+                    for (int i = 0; i < 3; i++)
                     {
-                        var conflictsNewColor = CountConflicts(vertex, i);
-
-                        if (IsInTabu(vertex, i))
-                            continue;
-                        else if (CountConflicts(vertex, i) < numberOfConflicts)
+                        if (vert.ColorId.Value == newColor)
                         {
-                            vertex.ColorId = i;
+                            newColor = _random.Next(0, numberOfColors);
                             break;
                         }
                     }
 
-                    tabu.Add((vertex, vertex.ColorId.Value));
-                    if (tabu.Count > 150)
-                        tabu.RemoveAt(0);
-                    //tabu.Remove(tabu.Find(t => t.Vertex == vertex));
+                    var oldColor = vert.ColorId.Value;
+                    vert.ColorId = newColor;
 
-                    conflictsInGraph = Math.Min(conflictsInGraph, CountConflicts(graph));
+                    var newConflicts = GetConflictingVertices(graph);
+
+                    if (newConflicts.Count < conflictsInGraph)
+                    {
+                        int aspirationValue = conflictsInGraph - 1;
+                        if (!aspiration.TryGetValue(conflictsInGraph, out aspirationValue))
+                            aspiration.Add(conflictsInGraph, conflictsInGraph - 1);
+
+                        if (newConflicts.Count <= aspirationValue)
+                        {
+                            aspiration[conflictsInGraph] = newConflicts.Count - 1;
+
+                            if (IsInTabu(vert, newColor))
+                                tabu.Remove((vert, newColor));
+                        }
+                        else if (IsInTabu(vert, newColor))
+                        {
+                            vert.ColorId = oldColor;
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    vert.ColorId = oldColor;
                 }
 
-                if (conflictsInGraph == 0)
+                tabu.Add((vert, vert.ColorId.Value));
+                if (tabu.Count > 3)
+                    tabu.RemoveAt(0);
+
+                vert.ColorId = newColor;
+
+                if (CountConflicts(graph) == 0)
                 {
                     lastValidGraph = graph.Clone();
                     numberOfColors--;
                     iteration = 0;
-                    ClampColors(graph, numberOfColors);
+                    ClampColors(graph, numberOfColors - 1);
                     Console.WriteLine($"No conflicts, new number of colors: {numberOfColors + 1}");
                 }
+                else
+                    iteration++;
 
-                iteration++;
+                //sw.Stop();
+                //Console.WriteLine($"ITERATION TIME: {sw.ElapsedMilliseconds}");
             }
 
             return lastValidGraph.GetColorCount();
@@ -78,36 +114,32 @@ namespace GraphColoring
             }
         }
 
-        private List<int> GetNeighborColors(GraphVertex vertex)
-        {
-            var neighborColors = new List<int>();
-
-            foreach (var neighbor in vertex.Neighbors)
-            {
-                if (neighbor.ColorId.HasValue)
-                    neighborColors.Add(neighbor.ColorId.Value);
-            }
-
-            return neighborColors;
-        }
-
-        private int CountConflicts(GraphVertex vertex)
-        {
-            return vertex.Neighbors.Count(n => n.ColorId == vertex.ColorId);
-        }
-
-        private int CountConflicts(GraphVertex vertex, int colorId)
-        {
-            return vertex.Neighbors.Count(n => n.ColorId == colorId);
-        }
-
         private int CountConflicts(Graph graph)
         {
-            int conflicts = 0;
+            /*int conflicts = 0;
             foreach (var vertex in graph.Vertices)
                 conflicts += CountConflicts(vertex);
 
-            return conflicts;
+            return conflicts;*/
+            return GetConflictingVertices(graph).Count / 2;
+        }
+
+        private HashSet<GraphVertex> GetConflictingVertices(Graph graph)
+        {
+            var result = new HashSet<GraphVertex>();
+            foreach (var vert in graph.Vertices)
+            {
+                foreach (var neighbor in vert.Neighbors)
+                {
+                    if (vert.ColorId.Value == neighbor.ColorId.Value)
+                    {
+                        result.Add(vert);
+                        result.Add(neighbor);
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void ClampColors(Graph graph, int maxColor)
