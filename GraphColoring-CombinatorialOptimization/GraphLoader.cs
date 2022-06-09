@@ -101,7 +101,6 @@ namespace GraphColoring
             }
 
             graph.Vertices = graph.Vertices.OrderBy(v => v.Identifier).ToList();
-            Console.WriteLine($" vertices: {graph.Vertices.Count} ");
 
             return graph;
         }
