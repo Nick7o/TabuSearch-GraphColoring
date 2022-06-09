@@ -8,6 +8,13 @@ namespace GraphColoring
 {
     public class GreedyColoring : IGraphColoring
     {
+        public int MaxColorId { get; set; } = -1;
+
+        public GreedyColoring(int maxColorId = -1)
+        {
+            MaxColorId = maxColorId;
+        }
+
         public int Color(Graph graph)
         {
             int maxColorId = 0;
@@ -18,6 +25,9 @@ namespace GraphColoring
                 var color = GetFirstFreeColor(neighborColors);
                 vertex.ColorId = color;
                 maxColorId = Math.Max(color, maxColorId);
+
+                if (maxColorId == MaxColorId)
+                    break;
             }
 
             return maxColorId + 1;

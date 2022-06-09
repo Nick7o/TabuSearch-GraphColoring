@@ -10,11 +10,16 @@ namespace GraphColoring
     {
         public List<GraphVertex> Vertices { get; set; } = new List<GraphVertex>();
 
+        private Dictionary<string, GraphVertex> Cache { get; set; } = new Dictionary<string, GraphVertex>();
+
         public Graph() { }
 
         public Graph(List<GraphVertex> vertices)
         {
             Vertices = vertices;
+            Cache = new Dictionary<string, GraphVertex>(vertices.Count);
+            foreach (var v in vertices)
+                Cache[v.Identifier] = v;
 
             ApplyParent();
         }
@@ -25,6 +30,21 @@ namespace GraphColoring
             {
                 vertex.Graph = this;
             }
+        }
+
+        public GraphVertex Get(string identifier)
+        {
+            if (!Cache.TryGetValue(identifier, out var value) || value.Graph != this)
+            {
+                if (value != null && value.Graph != this)
+                    Cache.Remove(identifier);
+
+                value = Vertices.Find(v => v.Identifier == identifier);
+                if (value != null)
+                    Cache[identifier] = value;
+            }
+
+            return value;
         }
 
         public bool Contains(string identifier)
@@ -42,6 +62,29 @@ namespace GraphColoring
             }
 
             return colorCount + 1;
+        }
+
+        public void ClearColors()
+        {
+            foreach (var vertex in Vertices)
+            {
+                vertex.ColorId = null;
+            }
+        }
+
+        public void RandomizeOrder()
+        {
+            Random rnd = new Random();
+
+            int n = Vertices.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rnd.Next(n + 1);
+                var value = Vertices[k];
+                Vertices[k] = Vertices[n];
+                Vertices[n] = value;
+            }
         }
 
         public override string ToString()
