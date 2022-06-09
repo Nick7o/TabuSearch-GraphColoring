@@ -11,14 +11,16 @@ namespace GraphColoring
             {
                 var le450_5a = new GraphLoader().Load("le450_5a.txt", GraphLoader.GraphFormat.Minimal, out _);
                 var gc500 = new GraphLoader().Load("gc500.txt", GraphLoader.GraphFormat.Minimal, out _);
+                var gc1000 = new GraphLoader().Load("gc_1000.txt", GraphLoader.GraphFormat.Minimal, out _);
 
                 //ProcessGraph(le450_5a, "le450_5a", 10000, 200, 4); // 6
-                ProcessGraph(gc500, "gc500", 100, 100, 250);
+                //ProcessGraph(gc500, "gc500", 100, 100, 250);
 
-                //new Thread(() => ProcessGraph(gc500, "gc500", 5000, 200, 4)).Start();
-                //new Thread(() => ProcessGraph(gc500, "gc500", 5000, 200, 16)).Start();
-                //new Thread(() => ProcessGraph(gc500, "gc500", 5000, 200, 64)).Start();
-                //new Thread(() => ProcessGraph(gc500, "gc500 fast", 1000, 50, 96)).Start();
+                new Thread(() => ProcessGraph(gc500, "gc500[3]", 500000, 300, 3)).Start();
+                new Thread(() => ProcessGraph(gc500, "gc500[5]", 500000, 300, 5)).Start();
+
+                new Thread(() => ProcessGraph(gc1000, "gc1000[3]", 500000, 600, 3)).Start();
+                new Thread(() => ProcessGraph(gc1000, "gc1000[5]", 500000, 600, 5)).Start();
             }
             catch (System.IO.FileNotFoundException exception)
             {
@@ -39,15 +41,17 @@ namespace GraphColoring
                 greedyGraph = graph.Clone();
             }
 
+            tabuGraph.Name = graphName;
+            greedyGraph.Name = graphName;
+
             var greedyColoring = new GreedyColoring();
             var greedyResult = greedyColoring.Color(greedyGraph);
 
             var tabuSearchColoring = new TabuSearchColoring(maxIteration, rep, tabuSize, maxTime);
             int tabuSearchResult = tabuSearchColoring.Color(tabuGraph);
 
-            Console.WriteLine($"GREEDY NUMBER OF COLORS: {greedyResult}");
-            Console.WriteLine($"TABU NUMBER OF COLORS: {tabuSearchResult}");
-            Console.WriteLine($" =========================== ");
+            Console.WriteLine($"!!! {graphName} - GREEDY NUMBER OF COLORS: {greedyResult}");
+            Console.WriteLine($"!!! {graphName} - TABU NUMBER OF COLORS: {tabuSearchResult}");
         }
     }
 }

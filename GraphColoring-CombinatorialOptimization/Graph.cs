@@ -8,6 +8,7 @@ namespace GraphColoring
 {
     public class Graph
     {
+        public string Name { get; set; } = "";
         public List<GraphVertex> Vertices { get; set; } = new List<GraphVertex>();
 
         private Dictionary<string, GraphVertex> Cache { get; set; } = new Dictionary<string, GraphVertex>();
@@ -87,6 +88,11 @@ namespace GraphColoring
             }
         }
 
+        public void Sort()
+        {
+            Vertices.Sort((a, b) => a.Identifier.CompareTo(b));
+        }
+
         public override string ToString()
         {
             return ToString(true);
@@ -107,6 +113,7 @@ namespace GraphColoring
         {
             var clonedVertices = new List<GraphVertex>(Vertices.Count);
             var newGraph = new Graph(clonedVertices);
+            newGraph.Name = Name;
 
             for (int i = 0; i < Vertices.Count; i++)
             {

@@ -8,6 +8,8 @@ namespace GraphColoring
 {
     class TabuSearchColoring : IGraphColoring
     {
+        public static int MaxGreedyTries = 3;
+
         public int MaxIterations { get; set; } = 1000;
         public int Rep { get; set; }
         public int TabuSize { get; set; }
@@ -38,28 +40,8 @@ namespace GraphColoring
             var aspiration = new Dictionary<int, int>();
             var lastValidGraph = graph.Clone();
 
-            // Searching for the best start using randomized greedy search
-            List<int> colors = new List<int>();
             var greedyColoring = new GreedyColoring();
-            for (int i = 0; i < 3; i++)
-            {
-                graph.ClearColors();
-                var numberOfColorsGR = greedyColoring.Color(graph);
-                if (colors.Count == 0 || numberOfColorsGR <= colors.Max())
-                {
-                    Console.WriteLine($"Found greedy solution - colors: {numberOfColorsGR}");
-                    colors.Clear();
-                    foreach (var vert in graph.Vertices)
-                        colors.Add(vert.ColorId.Value);
-                }
-                graph.RandomizeOrder();
-            }
-
-            for (int i = 0; i < graph.Vertices.Count; i++)
-                graph.Vertices[i].ColorId = colors[i];
-
-            numberOfColors = colors.Max() + 1;
-            Console.WriteLine("NB OF COLORS: "+ numberOfColors);
+            numberOfColors = greedyColoring.Color(graph) - 1;
 
             ClampColors(graph, numberOfColors - 1);
 
@@ -67,6 +49,9 @@ namespace GraphColoring
             sw.Start();
             while (iteration < MaxIterations)
             {
+                if (MaxTime > 0 && sw.ElapsedMilliseconds > MaxTime * 1000)
+                    break;
+
                 var conflictingVertices = GetConflictingVertices(graph);//.ToList();
                 var conflictsInGraph = conflictingVertices.Count;
 
@@ -137,14 +122,14 @@ namespace GraphColoring
                     //greedyColoring.MaxColorId = numberOfColors;
                     //greedyColoring.Color(graph);
 
-                    Console.WriteLine($"No conflicts, new number of colors: {numberOfColors + 1}");
+                    Console.WriteLine($"{graph.Name} - No conflicts, new number of colors: {numberOfColors + 1}");
                 }
                 else
                     iteration++;
 
-                if (iteration % 100 == 0)
+                if (iteration % 250 == 0)
                 {
-                    Console.WriteLine($"{System.Threading.Thread.CurrentThread.ManagedThreadId} - ELAPSED TIME: {sw.ElapsedMilliseconds} ms");
+                    Console.WriteLine($"{graph.Name} - ELAPSED TIME: {sw.ElapsedMilliseconds} ms");
                 }
             }
             sw.Stop();
