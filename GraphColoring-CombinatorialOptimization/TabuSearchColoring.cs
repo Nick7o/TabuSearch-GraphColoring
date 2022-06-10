@@ -38,11 +38,12 @@ namespace GraphColoring
             int numberOfColors = graph.Vertices.Count;
             var tabu = new List<(GraphVertex Vertex, int Color)>(TabuSize);
             var aspiration = new Dictionary<int, int>();
-            var lastValidGraph = graph.Clone();
 
             var greedyColoring = new GreedyColoring();
             numberOfColors = greedyColoring.Color(graph) - 1;
+            var lastValidGraph = graph.Clone();
 
+            Console.WriteLine($"{graph.Name} - GREEDY NUM OF COLORS: {numberOfColors + 1}");
             ClampColors(graph, numberOfColors - 1);
 
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();

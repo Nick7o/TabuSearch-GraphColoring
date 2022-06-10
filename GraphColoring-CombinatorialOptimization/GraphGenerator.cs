@@ -27,11 +27,13 @@ namespace GraphColoring
             additionalEdgeSpawnChance = Math.Clamp(additionalEdgeSpawnChance, 0, 1);
 
             var vertices = new List<GraphVertex>(vertexCount);
+            var graph = new Graph(vertices);
 
             // Creating empty vertices
             for (int i = 0; i < vertexCount; i++)
                 vertices.Add(new GraphVertex()
                 {
+                    Graph = graph,
                     Identifier = $"V{i}"
                 });
 
@@ -58,7 +60,7 @@ namespace GraphColoring
                 }
             }
 
-            return new Graph(vertices);
+            return graph;
         }
 
         /// <summary>
