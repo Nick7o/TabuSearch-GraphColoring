@@ -56,7 +56,7 @@ namespace GraphColoring
 
                         for (int i = 1; i <= vertexCount; i++)
                         {
-                            var vert = new GraphVertex($"{i:00000}");
+                            var vert = new GraphVertex(GetVertexIdentifier(i, vertexCount.Value));
                             vert.Graph = graph;
                             graph.Vertices.Add(vert);
                             helperDictionary[vert.Identifier] = vert;
@@ -70,8 +70,8 @@ namespace GraphColoring
                 var words = line.Split(" ");
                 if (words.Length >= 2 && int.TryParse(words[0], out var firstEndpoint) && int.TryParse(words[1], out var secondEndpoint))
                 {
-                    var firstId = $"{firstEndpoint:00000}";
-                    var secondId = $"{secondEndpoint:00000}";
+                    var firstId = GetVertexIdentifier(firstEndpoint, vertexCount.Value);
+                    var secondId = GetVertexIdentifier(secondEndpoint, vertexCount.Value);
 
                     helperDictionary.TryGetValue(firstId, out var firstEndpointVertex);
                     helperDictionary.TryGetValue(secondId, out var secondEndpointVertex);
@@ -103,6 +103,14 @@ namespace GraphColoring
             graph.Vertices = graph.Vertices.OrderBy(v => v.Identifier).ToList();
 
             return graph;
+
+            string GetVertexIdentifier(int id, int vertexCount)
+            {
+                int digits = (int)Math.Ceiling(Math.Log10(vertexCount));
+                string format = String.Concat(Enumerable.Repeat('0', digits));
+
+                return id.ToString(format);
+            }
         }
     }
 }
